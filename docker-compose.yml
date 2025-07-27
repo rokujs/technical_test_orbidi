@@ -1,0 +1,32 @@
+services:
+
+  postgres:
+    container_name: database
+    image: postgres:17-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init/postgres:/docker-entrypoint-initdb.d:ro
+      - ./storage/postgres:/var/lib/postgresql/data:rw
+    env_file: ./envs/postgres.env
+    networks:
+      - backend-net
+
+  backend:
+    container_name: map_my_world
+    platform: linux/amd64
+    build: map_my_world
+    links:
+      - postgres:postgres
+    volumes:
+      - ./map_my_world:/opt/project:rw
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    env_file: map_my_world/.env
+    networks:
+      - backend-net
+
+networks:
+  backend-net:
