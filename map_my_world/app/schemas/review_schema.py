@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import uuid
 
+
 class ReviewSchema(BaseModel):
     id: int
     review: str | None = None

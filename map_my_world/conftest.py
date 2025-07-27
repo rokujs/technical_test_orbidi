@@ -1,4 +1,3 @@
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -11,6 +10,7 @@ from core.database import get_db
 engine = create_engine(Settings.get_test_db_url(), pool_pre_ping=True)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @pytest.fixture(name="db_session")
 def db_session_fixture():
     Base.metadata.create_all(bind=engine)
@@ -20,6 +20,7 @@ def db_session_fixture():
     finally:
         db.close()
         Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture(name="client")
 def client_fixture(db_session):

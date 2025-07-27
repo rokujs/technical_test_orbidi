@@ -6,6 +6,7 @@ from app.schemas.category_schema import CategoryCreate, CategoryList
 
 router = APIRouter(prefix="/category", tags=["Categories"])
 
+
 @router.post("/", response_model=CategoryList, status_code=status.HTTP_201_CREATED)
 async def create_category(item: CategoryCreate, db: Session = Depends(get_db)):
     # Normalize the name
@@ -14,8 +15,10 @@ async def create_category(item: CategoryCreate, db: Session = Depends(get_db)):
     existing = db.query(Category).filter(Category.name == normalized_name).first()
 
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Category already exists")
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Category already exists"
+        )
+
     category = Category(name=normalized_name, description=item.description)
 
     db.add(category)
@@ -23,6 +26,7 @@ async def create_category(item: CategoryCreate, db: Session = Depends(get_db)):
     db.refresh(category)
 
     return category
+
 
 @router.get("/", response_model=list[CategoryList])
 async def list_categories(db: Session = Depends(get_db)):

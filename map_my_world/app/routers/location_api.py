@@ -6,6 +6,7 @@ from app.schemas.location_schema import LocationCreate, LocationList
 
 router = APIRouter(prefix="/location", tags=["Locations"])
 
+
 @router.post("/", response_model=LocationList, status_code=status.HTTP_201_CREATED)
 async def create_location(item: LocationCreate, db: Session = Depends(get_db)):
     # Normalize the name: all lowercase
@@ -14,13 +15,15 @@ async def create_location(item: LocationCreate, db: Session = Depends(get_db)):
     existing = db.query(Location).filter(Location.name == normalized_name).first()
 
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Location already exists")
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Location already exists"
+        )
+
     location = Location(
         name=normalized_name,
         description=item.description,
         latitude=item.latitude,
-        longitude=item.longitude
+        longitude=item.longitude,
     )
 
     db.add(location)
@@ -28,6 +31,7 @@ async def create_location(item: LocationCreate, db: Session = Depends(get_db)):
     db.refresh(location)
 
     return location
+
 
 @router.get("/", response_model=list[LocationList])
 async def list_locations(db: Session = Depends(get_db)):

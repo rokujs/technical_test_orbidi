@@ -13,7 +13,15 @@ class SuggestedCombinations:
     RADIUS_METERS = 50.0
     EARTH_RADIUS_KM = 6371.0
 
-    def __init__(self, db: Session, latitude: float, longitude: float, category_id: int, page: int = 0, limit: int = 10):
+    def __init__(
+        self,
+        db: Session,
+        latitude: float,
+        longitude: float,
+        category_id: int,
+        page: int = 0,
+        limit: int = 10,
+    ):
         self.db = db
         self.latitude = latitude
         self.longitude = longitude
@@ -33,7 +41,9 @@ class SuggestedCombinations:
         delta_lon = location_lon_rad - user_lon_rad
 
         # Haversine formula to calculate the distance
-        haversine_a = func.pow(func.sin(delta_lat / 2), 2) + func.cos(user_lat_rad) * func.cos(location_lat_rad) * func.pow(func.sin(delta_lon / 2), 2)
+        haversine_a = func.pow(func.sin(delta_lat / 2), 2) + func.cos(
+            user_lat_rad
+        ) * func.cos(location_lat_rad) * func.pow(func.sin(delta_lon / 2), 2)
         haversine_c = 2 * func.atan2(func.sqrt(haversine_a), func.sqrt(1 - haversine_a))
 
         distance_km = self.EARTH_RADIUS_KM * haversine_c
@@ -60,14 +70,16 @@ class SuggestedCombinations:
             .order_by(
                 # First those without review (date_created is None), then those with reviews older than 30 days
                 (review_subq.c.date_created.is_(None)).desc(),
-                (review_subq.c.date_created < thirty_days_ago).desc()
+                (review_subq.c.date_created < thirty_days_ago).desc(),
             )
         )
         offset = self.page * self.limit
         locations = query.offset(offset).limit(self.limit).all()
         return locations
 
-    def _get_category_for_location(self, location: Location) -> tuple[Category, list[Review]]:
+    def _get_category_for_location(
+        self, location: Location
+    ) -> tuple[Category, list[Review]]:
         """
         For a given location, returns:
         - the category that matches the location and self.category_id in Review (if exists), otherwise a random category for that location
@@ -75,13 +87,18 @@ class SuggestedCombinations:
         """
         reviews = (
             self.db.query(Review)
-            .filter((Review.location_id == location.id) & (Review.category_id == self.category_id))
+            .filter(
+                (Review.location_id == location.id)
+                & (Review.category_id == self.category_id)
+            )
             .order_by(Review.date_created.desc())
             .limit(10)
             .all()
         )
         if reviews:
-            category = self.db.query(Category).filter(Category.id == self.category_id).first()
+            category = (
+                self.db.query(Category).filter(Category.id == self.category_id).first()
+            )
         else:
             category = self.db.query(Category).order_by(func.random()).first()
         return category, reviews
@@ -93,9 +110,7 @@ class SuggestedCombinations:
         for location in locations:
             category, reviews = self._get_category_for_location(location)
             suggestion = SuggestionSchema(
-                location=location,
-                category=category,
-                reviews=reviews
+                location=location, category=category, reviews=reviews
             )
             suggestions.append(suggestion)
         return suggestions

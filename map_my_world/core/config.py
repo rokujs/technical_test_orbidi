@@ -29,5 +29,5 @@ class Settings:
         """
         db_host = os.getenv("DB_HOST")
         db_port = os.getenv("DB_PORT")
-        
+
         return f"postgresql://test_map_my_world:MRc1VKa5aA0Z@{db_host}:{db_port}/map_my_world_testdb"

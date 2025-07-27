@@ -2,6 +2,7 @@ import pytest
 from app.models.review import Review
 from core.models.user import User
 
+
 def test_list_suggestions_empty(client):
     # Query with no data in DB
     params = {
@@ -9,7 +10,7 @@ def test_list_suggestions_empty(client):
         "longitude": -73.0,
         "category_id": 1,
         "page": 0,
-        "limit": 5
+        "limit": 5,
     }
 
     response = client.get("/suggestions/", params=params)
@@ -32,7 +33,7 @@ def test_list_suggestions_with_data(client):
         "name": "central park",
         "description": "NYC park",
         "latitude": 40.785091,
-        "longitude": -73.968285
+        "longitude": -73.968285,
     }
     client.post("/location/", json=loc_payload)
 
@@ -42,7 +43,7 @@ def test_list_suggestions_with_data(client):
         "longitude": -73.968285,
         "category_id": category_id,
         "page": 0,
-        "limit": 5
+        "limit": 5,
     }
     response = client.get("/suggestions/", params=params)
 
@@ -57,18 +58,15 @@ def test_list_suggestions_with_data(client):
     assert "category" in suggestion
     assert "reviews" in suggestion
 
+
 def test_suggestions_missing_latitude(client):
-    params = {
-        "longitude": -73.0,
-        "category_id": 1,
-        "page": 0,
-        "limit": 5
-    }
+    params = {"longitude": -73.0, "category_id": 1, "page": 0, "limit": 5}
 
     response = client.get("/suggestions/", params=params)
 
     assert response.status_code == 422
     assert "latitude" in response.text
+
 
 def test_suggestions_out_of_range(client):
     # Create category and location far from query point
@@ -80,7 +78,7 @@ def test_suggestions_out_of_range(client):
         "name": "everest",
         "description": "Highest mountain",
         "latitude": 27.9881,
-        "longitude": 86.9250
+        "longitude": 86.9250,
     }
     client.post("/location/", json=loc_payload)
 
@@ -90,13 +88,14 @@ def test_suggestions_out_of_range(client):
         "longitude": -73.968285,
         "category_id": category_id,
         "page": 0,
-        "limit": 5
+        "limit": 5,
     }
     response = client.get("/suggestions/", params=params)
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
     assert len(data) == 0
+
 
 def test_suggestions_with_reviews(client, db_session):
     # Create category
@@ -109,7 +108,7 @@ def test_suggestions_with_reviews(client, db_session):
         "name": "starbucks",
         "description": "Coffee shop",
         "latitude": 40.785091,
-        "longitude": -73.968285
+        "longitude": -73.968285,
     }
     loc_resp = client.post("/location/", json=loc_payload)
     location_id = loc_resp.json()["id"]
@@ -118,7 +117,7 @@ def test_suggestions_with_reviews(client, db_session):
     user = User(
         username="testuser",
         email="testuser@example.com",
-        hashed_password="fakehashedpassword"
+        hashed_password="fakehashedpassword",
     )
     db_session.add(user)
     db_session.commit()
@@ -129,7 +128,7 @@ def test_suggestions_with_reviews(client, db_session):
         category_id=category_id,
         user_id=user.id,
         rating=5,
-        review="Great coffee!"
+        review="Great coffee!",
     )
     db_session.add(review)
     db_session.commit()
@@ -140,7 +139,7 @@ def test_suggestions_with_reviews(client, db_session):
         "longitude": -73.968285,
         "category_id": category_id,
         "page": 0,
-        "limit": 5
+        "limit": 5,
     }
     response = client.get("/suggestions/", params=params)
     assert response.status_code == 200
