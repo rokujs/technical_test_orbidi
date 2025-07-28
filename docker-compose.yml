@@ -20,6 +20,7 @@ services:
       - postgres:postgres
     volumes:
       - ./map_my_world:/opt/project:rw
+      - venv-data:/opt/project/.venv
     ports:
       - "8000:8000"
     depends_on:
@@ -30,3 +31,6 @@ services:
 
 networks:
   backend-net:
+
+volumes:
+  venv-data:
