@@ -56,7 +56,7 @@ class SuggestedCombinations:
         Orders: 1) Locations without reviews, 2) Locations with reviews older than 30 days.
         """
         distance_filter = self._get_haversine_distance_filter()
-        # Subquery to get reviews for each location, using date_created from Review (inherited from Auditor)
+        # Subquery to get reviews for each location, using date_created from Review
         review_subq = self.db.query(Review.location_id, Review.date_created).subquery()
 
         # 30 days ago

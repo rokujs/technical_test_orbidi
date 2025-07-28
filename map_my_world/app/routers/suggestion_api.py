@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from core.database import get_db
-from app.models.category import Category
-from app.schemas.category_schema import CategoryCreate, CategoryList
 from app.schemas.suggestion_schema import SuggestionParams, SuggestionSchema
 
 router = APIRouter(prefix="/suggestions", tags=["Suggestions"])

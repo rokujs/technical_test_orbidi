@@ -46,7 +46,7 @@ These instructions are designed for Linux-based systems but are easily adaptable
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/
+    git clone https://github.com/rokujs/technical_test_orbidi.git
     ```
 2.  **Navigate to the project directory:**
     ```bash
